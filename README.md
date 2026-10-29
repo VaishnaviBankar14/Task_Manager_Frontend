@@ -1,16 +1,62 @@
-# React + Vite
+# Task Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A responsive Task Manager web application built with React and Vite. It connects to a REST API to support user authentication and task management.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- User registration and login
+- JWT-based authentication
+- View tasks and task details
+- Create, edit, and delete tasks
+- Task status and due date management
+- Form validation and error handling
+- Responsive user interface
 
-## React Compiler
+## Technologies Used
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- Vite
+- React Router
+- JavaScript
+- CSS
+- Fetch API
+- REST API
 
-## Expanding the Oxlint configuration
+## Requirements
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- Node.js and npm
+- A running instance of the Task Manager backend
+
+## Setup
+
+1. Clone this repository.
+2. Open the project folder in a terminal.
+3. Install dependencies:
+   npm install
+
+4. Create a `.env` file in the project root:
+   VITE_API_URL=http://localhost:5000/api
+
+5. Start the development server:
+   npm run dev
+
+6. Open the local URL displayed in your terminal.
+
+## Backend
+
+The frontend connects to the Task Manager REST API:
+
+https://github.com/VaishnaviBankar14/Task_Manager_Api
+
+Make sure the backend server and database are running before using the application.
+
+## Production Build
+
+To create a production build:
+npm run build
+
+## Author
+
+Vaishnavi Bankar
+
+GitHub: https://github.com/VaishnaviBankar14
