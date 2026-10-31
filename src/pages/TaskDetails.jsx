@@ -26,11 +26,14 @@ function TaskDetails() {
           throw new Error("Please log in to view this task.");
         }
 
-        const response = await apiRequest(`/tasks/${id}`, { token });
+        const response = await apiRequest(`/tasks/${id}`, {
+          token,
+        });
 
         if (!cancelled) {
           setTask(response.data.task);
         }
+
       } catch (err) {
         if (!cancelled) {
           setError(err.message || "Unable to load task.");
@@ -47,6 +50,7 @@ function TaskDetails() {
     return () => {
       cancelled = true;
     };
+
   }, [id]);
 
   const handleDelete = async () => {
@@ -72,6 +76,7 @@ function TaskDetails() {
       });
 
       navigate("/", { replace: true });
+
     } catch (err) {
       setError(err.message || "Unable to delete task.");
       setDeleting(false);
@@ -79,54 +84,112 @@ function TaskDetails() {
   };
 
   if (loading) {
-    return <p role="status">Loading task...</p>;
+    return (
+      <div className="page-loading" role="status">
+        Loading task details...
+      </div>
+    );
   }
 
   if (error && !task) {
     return (
-      <section>
+      <section className="details-page">
         <h1>Task Details</h1>
-        <p role="alert">{error}</p>
-        <Link to="/">Back to My Tasks</Link>
+        <p className="form-error" role="alert">{error}</p>
+        <Link to="/" className="secondary-btn">
+          Back to Dashboard
+        </Link>
       </section>
     );
   }
 
   if (!task) {
-    return <p>Task not found.</p>;
+    return (
+      <section className="details-page">
+        <h1>Task not found</h1>
+        <Link to="/">Back to Dashboard</Link>
+      </section>
+    );
   }
 
+  const statusLabels = {
+    pending: "Pending",
+    "in-progress": "In Progress",
+    completed: "Completed",
+  };
+
   return (
-    <section>
-      <h1>{task.title}</h1>
+    <section className="details-page">
 
-      <p>
-        <strong>Description:</strong>{" "}
-        {task.description || "No description provided."}
-      </p>
+      <div className="details-heading">
+        <div>
+          <span className="auth-eyebrow">TASK DETAILS</span>
+          <h1>{task.title}</h1>
+        </div>
 
-      <p>
-        <strong>Status:</strong> {task.status}
-      </p>
-
-      <p>
-        <strong>Due date:</strong>{" "}
-        {task.dueDate
-          ? new Date(task.dueDate).toLocaleDateString()
-          : "No due date"}
-      </p>
-
-      {error && <p role="alert">{error}</p>}
-
-      <div>
-        <Link to={`/tasks/${task._id}/edit`}>Edit Task</Link>{" "}
-        <button onClick={handleDelete} disabled={deleting}>
-          {deleting ? "Deleting..." : "Delete Task"}
-        </button>{" "}
-        <Link to="/">Back to My Tasks</Link>
+        <span className={`status-badge ${task.status}`}>
+          {statusLabels[task.status] || task.status}
+        </span>
       </div>
+
+      <div className="details-content">
+
+        <div className="detail-item">
+          <span className="detail-label">Description</span>
+          <p>
+            {task.description || "No description provided."}
+          </p>
+        </div>
+
+        <div className="detail-item">
+          <span className="detail-label">Status</span>
+          <p>{statusLabels[task.status] || task.status}</p>
+        </div>
+
+        <div className="detail-item">
+          <span className="detail-label">Due date</span>
+          <p>
+            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString()
+              : "No due date"}
+          </p>
+        </div>
+
+      </div>
+
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+
+      <div className="details-actions">
+
+        <Link
+          to={`/tasks/${task._id}/edit`}
+          className="primary-btn"
+        >
+          Edit Task
+        </Link>
+
+        <button
+          type="button"
+          className="danger-btn"
+          onClick={handleDelete}
+          disabled={deleting}
+        >
+          {deleting ? "Deleting..." : "Delete Task"}
+        </button>
+
+        <Link to="/" className="secondary-btn">
+          Back to Dashboard
+        </Link>
+
+      </div>
+
     </section>
   );
 }
 
 export default TaskDetails;
+

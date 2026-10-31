@@ -6,6 +6,7 @@ import { apiRequest } from "../services/api";
 function TaskForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const isEditing = Boolean(id);
 
   const [formData, setFormData] = useState({
@@ -27,7 +28,15 @@ function TaskForm() {
     async function fetchTask() {
       try {
         const token = localStorage.getItem("token");
-        const response = await apiRequest(`/tasks/${id}`, { token });
+
+        if (!token) {
+          throw new Error("Please log in to edit this task.");
+        }
+
+        const response = await apiRequest(`/tasks/${id}`, {
+          token,
+        });
+
         const task = response.data.task;
 
         if (!cancelled) {
@@ -40,10 +49,15 @@ function TaskForm() {
               : "",
           });
         }
+
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          setError(err.message || "Unable to load task.");
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
@@ -52,6 +66,7 @@ function TaskForm() {
     return () => {
       cancelled = true;
     };
+
   }, [id, isEditing]);
 
   const handleChange = (event) => {
@@ -109,6 +124,7 @@ function TaskForm() {
       }
 
       navigate("/", { replace: true });
+
     } catch (err) {
       setError(err.message || "Unable to save task.");
     } finally {
@@ -116,76 +132,132 @@ function TaskForm() {
     }
   };
 
-  if (loading) return <p role="status">Loading task...</p>;
+  if (loading) {
+    return (
+      <div className="page-loading" role="status">
+        Loading task...
+      </div>
+    );
+  }
 
   return (
-    <section>
-      <h1>{isEditing ? "Edit Task" : "Create Task"}</h1>
+    <section className="form-page">
 
-      {error && <p role="alert">{error}</p>}
+      <div className="page-heading">
+        <span className="auth-eyebrow">
+          TASK MANAGEMENT
+        </span>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title</label>
+        <h1>{isEditing ? "Edit Task" : "Create New Task"}</h1>
+
+        <p>
+          {isEditing
+            ? "Update your task details below."
+            : "Add a new task and keep your work organized."}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="task-form">
+
+        <div className="form-group">
+          <label htmlFor="title">Task title</label>
+
           <input
             id="title"
             name="title"
+            type="text"
+            placeholder="e.g. Complete React assignment"
             value={formData.title}
             onChange={handleChange}
             maxLength={100}
             required
           />
+
+          <small className="input-hint">
+            Maximum 100 characters.
+          </small>
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="description">Description</label>
+
           <textarea
             id="description"
             name="description"
+            placeholder="Describe what needs to be done..."
             value={formData.description}
             onChange={handleChange}
             maxLength={500}
-            rows={4}
+            rows={5}
           />
+
+          <small className="input-hint">
+            Maximum 500 characters.
+          </small>
         </div>
 
-        <div>
-          <label htmlFor="status">Status</label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
+        <div className="form-row">
+
+          <div className="form-group">
+            <label htmlFor="status">Task status</label>
+
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="dueDate">Due date</label>
+
+            <input
+              id="dueDate"
+              name="dueDate"
+              type="date"
+              value={formData.dueDate}
+              onChange={handleChange}
+            />
+          </div>
+
+        </div>
+
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div className="form-actions">
+
+          <button
+            type="submit"
+            className="primary-btn"
+            disabled={saving}
           >
-            <option value="pending">Pending</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
+            {saving
+              ? "Saving..."
+              : isEditing
+                ? "Update Task"
+                : "Create Task"}
+          </button>
+
+          <Link to="/" className="secondary-btn">
+            Cancel
+          </Link>
+
         </div>
 
-        <div>
-          <label htmlFor="dueDate">Due date (optional)</label>
-          <input
-            id="dueDate"
-            name="dueDate"
-            type="date"
-            value={formData.dueDate}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button type="submit" disabled={saving}>
-          {saving
-            ? "Saving..."
-            : isEditing
-              ? "Update Task"
-              : "Create Task"}
-        </button>
-
-        <Link to="/">Cancel</Link>
       </form>
+
     </section>
   );
 }
 
 export default TaskForm;
+

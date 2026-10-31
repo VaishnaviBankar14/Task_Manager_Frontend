@@ -49,20 +49,17 @@ function Login() {
       });
 
       const token =
-  response.token ||
-  response.data?.token ||
-  response.data?.data?.token;
+        response.token ||
+        response.data?.token ||
+        response.data?.data?.token;
 
-if (!token) {
-  throw new Error(
-    "Login response does not contain a token. Check authController.js."
-  );
-}
+      if (!token) {
+        throw new Error("Login response does not contain a token.");
+      }
 
-localStorage.setItem("token", token);
-navigate("/", { replace: true });
-
+      localStorage.setItem("token", token);
       navigate("/", { replace: true });
+
     } catch (err) {
       setError(err.message || "Unable to log in. Please try again.");
     } finally {
@@ -72,16 +69,22 @@ navigate("/", { replace: true });
 
   return (
     <section className="auth-page">
-      <h1>Login</h1>
-      <p>Sign in to manage your tasks.</p>
+      <div className="auth-heading">
+        <span className="auth-eyebrow">WELCOME BACK</span>
+        <h1>Login to TaskFlow</h1>
+        <p>Sign in to organize your work and manage your tasks.</p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
+      <form onSubmit={handleSubmit} className="auth-form">
+
+        <div className="form-group">
           <label htmlFor="email">Email address</label>
+
           <input
             id="email"
             name="email"
             type="email"
+            placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
             autoComplete="email"
@@ -89,12 +92,14 @@ navigate("/", { replace: true });
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="password">Password</label>
+
           <input
             id="password"
             name="password"
             type="password"
+            placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
             autoComplete="current-password"
@@ -102,18 +107,31 @@ navigate("/", { replace: true });
           />
         </div>
 
-        {error && <p role="alert">{error}</p>}
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+        <button
+          type="submit"
+          className="primary-btn auth-submit"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login to Account"}
         </button>
+
       </form>
 
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
+      <p className="auth-footer">
+        Don't have an account?
+        {" "}
+        <Link to="/register">Create an account</Link>
       </p>
     </section>
   );
 }
 
 export default Login;
+
+

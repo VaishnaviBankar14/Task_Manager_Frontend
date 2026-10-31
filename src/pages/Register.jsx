@@ -25,6 +25,7 @@ function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     setError("");
     setSuccess("");
 
@@ -41,7 +42,10 @@ function Register() {
       return;
     }
 
-    if (formData.password.length < 8 || formData.password.length > 72) {
+    if (
+      formData.password.length < 8 ||
+      formData.password.length > 72
+    ) {
       setError("Password must contain 8 to 72 characters.");
       return;
     }
@@ -58,11 +62,12 @@ function Register() {
         },
       });
 
-      setSuccess("Registration successful! Redirecting to login...");
+      setSuccess("Account created successfully! Redirecting...");
 
       setTimeout(() => {
         navigate("/login", { replace: true });
-      }, 1000);
+      }, 1200);
+
     } catch (err) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {
@@ -72,16 +77,27 @@ function Register() {
 
   return (
     <section className="auth-page">
-      <h1>Create Account</h1>
-      <p>Register to start managing your tasks.</p>
 
-      <form onSubmit={handleSubmit}>
-        <div>
+      <div className="auth-heading">
+        <span className="auth-eyebrow">GET STARTED</span>
+
+        <h1>Create your account</h1>
+
+        <p>
+          Join TaskFlow and organize your everyday work.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="auth-form">
+
+        <div className="form-group">
           <label htmlFor="name">Full name</label>
+
           <input
             id="name"
             name="name"
             type="text"
+            placeholder="Enter your full name"
             value={formData.name}
             onChange={handleChange}
             minLength={2}
@@ -91,12 +107,14 @@ function Register() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="email">Email address</label>
+
           <input
             id="email"
             name="email"
             type="email"
+            placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
             autoComplete="email"
@@ -104,12 +122,14 @@ function Register() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="password">Password</label>
+
           <input
             id="password"
             name="password"
             type="password"
+            placeholder="Create a password"
             value={formData.password}
             onChange={handleChange}
             minLength={8}
@@ -117,21 +137,44 @@ function Register() {
             autoComplete="new-password"
             required
           />
+
+          <small className="input-hint">
+            Password must contain 8 to 72 characters.
+          </small>
         </div>
 
-        {error && <p role="alert">{error}</p>}
-        {success && <p role="status">{success}</p>}
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Creating account..." : "Register"}
+        {success && (
+          <p className="form-success" role="status">
+            {success}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          className="primary-btn auth-submit"
+          disabled={loading}
+        >
+          {loading ? "Creating account..." : "Create Account"}
         </button>
+
       </form>
 
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
+      <p className="auth-footer">
+        Already have an account?
+        {" "}
+        <Link to="/login">Login</Link>
       </p>
+
     </section>
   );
 }
 
 export default Register;
+
+
